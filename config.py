@@ -10,6 +10,8 @@ class Config(object):
     AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
     AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
     AWS_BUCKET_NAME = os.getenv('AWS_BUCKET_NAME')
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_SECRET_ID")
 
 
 class ProductionConfig(Config):
