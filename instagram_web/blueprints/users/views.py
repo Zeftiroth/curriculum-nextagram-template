@@ -105,6 +105,7 @@ def upload():
     user = User.get_or_none(User.id == current_user.id)
     user.profile_image = file.filename
     user.save()
+    breakpoint()
     os.remove(temp_storage)
     flash('Upload success!', 'success')
     return redirect(url_for('users.user_profile', id=current_user.id))
