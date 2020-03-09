@@ -7,7 +7,7 @@ from instagram_web.blueprints.donations.views import donations_blueprint
 from instagram_web.blueprints.follows.views import follows_blueprint
 from flask_assets import Environment, Bundle
 from .util.assets import bundles
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, login_required
 from models.user import User
 from instagram_web.util.google_oauth import oauth
 
@@ -23,6 +23,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 oauth.init_app(app)
+# login_manager.login_view = "sessions."
 
 
 @login_manager.user_loader
@@ -36,21 +37,22 @@ def internal_server_error(e):
 
 
 @app.errorhandler(404)
-def internal_server_error(e):
+def page_not_found_error(e):
     return render_template('404.html'), 404
 
 
 @app.errorhandler(401)
-def internal_server_error(e):
-    return render_template('404.html'), 401
+def unauthorize_error(e):
+    return render_template('401.html'), 401
 
 
 @app.errorhandler(400)
-def internal_server_error(e):
-    return render_template('404.html'), 400
+def bad_request_error(e):
+    return render_template('400.html'), 400
 
 
 @app.route("/")
+@login_required
 def home():
     if current_user.is_authenticated:
         return redirect(url_for('users.user_profile', id=current_user.id))
