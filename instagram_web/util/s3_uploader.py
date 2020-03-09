@@ -9,15 +9,15 @@ s3 = boto3.client(
 )
 
 
-def upload_file_to_s3(file, acl="public-read"):
+def upload_file_to_s3(file, ori_file, acl="public-read"):
     try:
-        s3.upload_fileobj(
+        s3.upload_file(
             file,
             Config.AWS_BUCKET_NAME,
-            file.filename,
+            ori_file.filename,
             ExtraArgs={
                 "ACL": acl,
-                "ContentType": file.content_type
+                "ContentType": ori_file.content_type
             }
         )
 

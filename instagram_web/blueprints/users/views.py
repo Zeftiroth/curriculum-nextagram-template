@@ -10,6 +10,7 @@ from instagram_web.util.s3_uploader import upload_file_to_s3
 from operator import attrgetter
 from PIL import Image, ImageOps
 import tempfile
+import os
 
 users_blueprint = Blueprint('users',
                             __name__,
@@ -84,25 +85,27 @@ def upload():
 
     file = request.files.get('profile_image')
 
-    # new_img = Image.open(file)
+    # image = request.files.get('image')
 
-    # new_img = ImageOps.fit(new_img, (500, 500), method=3,
-    #                       bleed=0.0, centering=(0.5, 0.5))
+    new_image = Image.open(file)
+
+    resized_image = ImageOps.fit(
+        new_image, (500, 500), method=3, bleed=0.0, centering=(0.5, 0.5))
+
+    temp_storage = f"./instagram_web/static/temp/{file.filename}"
+
+    resized_image.save(temp_storage)
 
     file.filename = secure_filename(file.filename)
 
-    if not upload_file_to_s3(file):
+    if not upload_file_to_s3(temp_storage, file):
         flash('Ops x loading!')
         return redirect(url_for('users.user_profile', id=current_user.id))
+
     user = User.get_or_none(User.id == current_user.id)
     user.profile_image = file.filename
     user.save()
-    # newImage = User.get(User.id == current_user.id).profile_image
-    # newImage = ImageOps.fit(file, (500, 500), method=3,
-    #                         bleed=0.0, centering=(0.5, 0.5))
-    # user.profile_image = newImage
-    # user.save()
-
+    os.remove(temp_storage)
     flash('Upload success!', 'success')
     return redirect(url_for('users.user_profile', id=current_user.id))
 
